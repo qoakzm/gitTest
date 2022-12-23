@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome="1" />
+	<link rel="stylesheet" href="style.css" />
+	<script type="text/javascript" src="Hatsu_Func.js"></script>
+	<title>Two Towers</title>
+</head>
+<body onload="ALL()">
+
+<center>
+	<canvas id="canvas" style="border:3px solid #000;border-radius: 5px;"></canvas>
+</center>
+
+<script>
+var canvas = document.getElementById("canvas"); var ctx = canvas.getContext("2d");
+var cw = canvas.width = 700; var ch = canvas.height = 600;
+var Version = "1.0.8";
+
+var Column = {
+	s: {
+		all: [],
+		L: [], R: [],
+		hoder: []
+	},
+	HM: 8,
+	createALL: function(HM) {
+		var COLORS = ["#a22", "#2a2", "#22a"];
+		
+		for(var i=1; i<=HM; i++) {
+			for(c in COLORS) Column.create(COLORS[c]);
+		}
+		
+		Column.roll();
+	},
+	create: function(COL) {
+		var ID = Column.s.all.length;
+		
+		Column.s.all[ID] = {
+			id: ID,
+			col: COL?COL: "#aaa",
+			alive: true,
+			
+			
+		}
+		
+	},
+	roll: function() {
+		for(cAll in Column.s.all) {
+			var CA = Column.s.all[cAll];
+			
+			rd(1, 2)==1 ? Column.s.L[Column.s.L.length] = CA : Column.s.R[Column.s.R.length] = CA;
+		}
+		
+	},
+	paint: function() {
+		for(l in Column.s.L) {
+			var L = Column.s.L[l];
+			var An = Column.animate; 
+			
+			Fill_ou(L.col, 280, 570 - l*22, 50, 20, "#000");
+			Txt_ou("#aaa", l, 280, 580 - l*22, "12px monospace", 2);
+			
+			
+		}
+		for(r in Column.s.R) {
+			var R = Column.s.R[r];
+			
+			//console.log(r)
+			Fill_ou(R.col, 370, 570 - r*22, 50, 20, "#000");
+			Txt_ou("#aaa", r, 370, 580 - r*22, "12px monospace", 2);
+			
+		}
+		
+	}
+};
+Column.createALL(Column.HM);
+
+var btn = {
+	col: "#333", // img place
+	pos: {
+		L: {
+			0: {x: 200, y: 350, siz: 30},
+			1: {x: 200, y: 450, siz: 30},
+			2: {x: 200, y: 550, siz: 30},
+		},
+		R: {
+			0: {x: 500, y: 350, siz: 30},
+			1: {x: 500, y: 450, siz: 30},
+			2: {x: 500, y: 550, siz: 30},
+		}
+	},
+	move: {
+		L: function(HM_move_AtoB) { // Move Left to Right  -->
+			if(Column.s.L.length - HM_move_AtoB >= 0) {
+				Texture.callAnim(0, 50, HM_move_AtoB, 500, 280);
+				Texture.callAnim(1, 50, HM_move_AtoB, -100, 370);
+				
+				for(var re=HM_move_AtoB; re>0; re--) {
+					Column.s.R[Column.s.R.length] = Column.s.L[Column.s.L.length - re];
+					Column.s.L[Column.s.L.length - re] = {};
+				}
+				Column.s.L.length = Column.s.L.length - HM_move_AtoB;
+			}
+		},
+		R: function(HM_move_AtoB) {  // Move Right to Left <--
+			if(Column.s.R.length - HM_move_AtoB >= 0) {
+				Texture.callAnim(0, 50, HM_move_AtoB, 500, 370);
+				Texture.callAnim(1, 50, HM_move_AtoB, -100, 280);
+				
+				for(var re=HM_move_AtoB; re>0; re--) {
+					Column.s.L[Column.s.L.length] = Column.s.R[Column.s.R.length - re];
+					Column.s.R[Column.s.R.length - re] = {};
+				}
+				Column.s.R.length = Column.s.R.length - HM_move_AtoB;
+			}
+		},
+	},
+	colision: function(mousePos) {
+		for(p in btn.pos.L) { p=eval(p); // <--
+			var P = btn.pos.L[p];
+			
+			Colision_circ(mousePos, P, function() {
+				btn.move.R(p+1);
+			});
+		}
+		for(p in btn.pos.R) { p=eval(p); // -->
+			var P = btn.pos.R[p];
+			
+			Colision_circ(mousePos, P, function() {
+				btn.move.L(p+1);
+			});
+		}
+	},
+	keyboard: function(keyCode) {
+		if(keyCode == 105) btn.move.L(1); // M = 1 -->
+		if(keyCode == 102) btn.move.L(2); // N = 2 -->
+		if(keyCode == 99) btn.move.L(3); // B = 3 -->
+		if(keyCode == 97) btn.move.R(3); // C = 3 <--
+		if(keyCode == 100) btn.move.R(2); // X = 2 <--
+		if(keyCode == 103) btn.move.R(1); // Z = 1 <--
+		
+		
+		
+	},
+	paint: function() {
+		for(l in btn.pos.L) { l=eval(l);
+			var L = btn.pos.L[l];
+			
+			Circ_ou(btn.col, L.x, L.y, L.siz, "#000");
+			Txt_ou("#aaa", l+1, L.x-5, L.y+10, "22px monospace", 2);
+		}
+		for(r in btn.pos.R) { r=eval(r);
+			var R = btn.pos.R[r];
+			
+			Circ_ou(btn.col, R.x, R.y, R.siz, "#000");
+			Txt_ou("#aaa", r+1, R.x-5, R.y+10, "22px monospace", 2);
+		}
+	}
+};
+
+var Texture = {
+	s: {
+		0: { // --> [1/2] (to Up)
+			time: 50,
+			offset: [0, -40], // [X, Y]
+			tracer: 3,
+			pos: {x: 280, y: 600, sizX: 50, sizY: 20},
+		},
+		1: { // --> [2/2] (to Down)
+			time: 50,
+			offset: [0, 40], // [X, Y]
+			tracer: 3,
+			pos: {x: 370, y: 0, sizX: 50, sizY: 20},
+		},
+	},
+	callAnim: function(ID, Time, Tracer, YPOS, XPOS) {
+		Texture.s[ID].time = Time;
+		Texture.s[ID].tracer = Tracer;
+		Texture.s[ID].pos.y = YPOS;
+		Texture.s[ID].pos.x = XPOS;
+	},
+	AnimAll: function() {
+		for(a in Texture.s) {
+			var A = Texture.s[a];
+			if(A.time>0) {
+				A.pos.x += A.offset[0];
+				A.pos.y += A.offset[1];
+				
+				for(var i=0; i<=A.tracer; i++) Fill_ou("#555", A.pos.x +A.offset[0]*i, A.pos.y +A.offset[1]*i, A.pos.sizX, A.pos.sizY, "#fff", .1);
+				
+				A.time>0 ? A.time-- : 1;
+			}
+		}
+	}
+	
+}
+
+function table() { //                                                       <  ======   table/table/table/table
+	BG = function() {
+		Fill("#336", 0, 0, cw, ch); //BG
+		Txt_ou("#aaa", "Ver. "+Version, cw-40, 10, "8px arial", 1); //Version
+	}
+	
+	
+	
+	
+	BG();
+	Texture.AnimAll();
+	Column.paint();
+	btn.paint();
+	
+	//f_text.prototype.constructor(); //FloatingTXT FILL
+} //                                                                        < ======   table/table/table/table
+
+canvas.addEventListener('mousedown', function(evt) {
+	var mousePos = getMousePos(canvas, evt);
+	//console.log(mousePos); // show me mousePos
+	
+	btn.colision(mousePos);
+	
+}, false);
+window.addEventListener('keydown', function(evt) {
+	//console.log(evt.keyCode+" | "+evt.key); // show me evt
+	
+	btn.keyboard(evt.keyCode);
+	
+}, false);
+
+function ALL() {
+	table();
+}
+
+var fps = 1000 / 60;
+setInterval(table, fps);
+</script>
+</body>
+</html>

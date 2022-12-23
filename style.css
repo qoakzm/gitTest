@@ -1,0 +1,40 @@
+body {
+	background-color: #293d3d;
+}
+header {
+	margin: 50px auto;
+	text-align: center;
+	text-shadow: -1px -1px 0px rgba(255,255,255,0.3), 1px 1px 0px rgba(0,0,0,0.8);
+	color: #fff;
+	-webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-color: black;
+	opacity: 0.9;
+	//font: 700 80px 'Bitter';
+	font-family: 'Audiowide';
+	font-size: 80px;
+}
+.txt1 {
+	//background-color: #5cc;
+	color: #000;
+	-webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-color: black;
+	font-family: 'Annie Use Your Telescope';
+	font-size: 25%;
+	padding-left: 50%;
+}
+#pastContainer {
+	//background-color: #fff;
+	text-align: center;
+}
+#navi {
+	background-color: #0aa;
+	width: 20%;
+	height: 90%;
+	float: left;
+}
+#main {
+	background-color: #5cc;
+	width: 80%;
+	height: 90%;
+}
+
